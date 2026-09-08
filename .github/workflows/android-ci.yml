@@ -31,7 +31,7 @@ jobs:
         run: yes | sdkmanager --licenses
 
       - name: Instalar Android SDK Platform 37
-        run: sdkmanager --install "platforms;android-37"
+        run: sdkmanager --install --channel=3 "platforms;android-37"
 
       - name: Habilitar Gradle Wrapper
         run: chmod +x mobile/gradlew
