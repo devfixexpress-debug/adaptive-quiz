@@ -16,4 +16,4 @@
 - [ ] Documento técnico <= 2 páginas (pendiente de comprobación al exportar).
 - [ ] Diagrama de arquitectura (no revalidado en esta fase).
 - [x] Código relevante identificable.
-- [ ] Release `v1.0.0` (pendiente de CI verde, tag y release remota).
+- [x] Release `v1.0.0`: tag y release remota publicados.
