@@ -1,7 +1,9 @@
 package com.veltia.adaptivequiz.mobile.domain.repository
 
 import com.veltia.adaptivequiz.mobile.domain.model.Adaptacion
+import com.veltia.adaptivequiz.mobile.domain.model.ActualizacionReglaAdaptativa
 import com.veltia.adaptivequiz.mobile.domain.model.Asignatura
+import com.veltia.adaptivequiz.mobile.domain.model.ConfiguracionAdaptativa
 import com.veltia.adaptivequiz.mobile.domain.model.ProgresoTema
 import com.veltia.adaptivequiz.mobile.domain.model.ResultadoIntento
 import com.veltia.adaptivequiz.mobile.domain.model.SesionPractica
@@ -22,4 +24,8 @@ interface AdaptiveQuizRepository {
     ): ResultadoIntento
     suspend fun progreso(idEstudiante: Long): List<ProgresoTema>
     suspend fun adaptaciones(idEstudiante: Long): List<Adaptacion>
+    suspend fun configuracionAdaptativa(): ConfiguracionAdaptativa
+    suspend fun actualizarReglaAdaptativa(codigoRegla: String, cambio: ActualizacionReglaAdaptativa): ConfiguracionAdaptativa
+    suspend fun actualizarPoliticaAdaptativa(tamanoVentanaIntentos: Int): ConfiguracionAdaptativa
+    suspend fun restaurarConfiguracionTaller(): ConfiguracionAdaptativa
 }

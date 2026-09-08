@@ -1,10 +1,12 @@
 package com.veltia.adaptivequiz.infrastructure.persistence.adapters;
 
 import com.veltia.adaptivequiz.domain.model.ItemCatalogo;
+import com.veltia.adaptivequiz.domain.model.CambioReglaAdaptacion;
 import com.veltia.adaptivequiz.domain.model.ParametroConfiguracion;
 import com.veltia.adaptivequiz.domain.model.PoliticaAdaptacion;
 import com.veltia.adaptivequiz.domain.model.ReglaAdaptacion;
 import com.veltia.adaptivequiz.domain.repository.CatalogoRepository;
+import com.veltia.adaptivequiz.domain.repository.ConfiguracionAdaptativaRepository;
 import com.veltia.adaptivequiz.domain.repository.ParametroRepository;
 import com.veltia.adaptivequiz.domain.repository.PoliticaAdaptacionRepository;
 import com.veltia.adaptivequiz.infrastructure.persistence.jdbc.CatalogoJdbcResolver;
@@ -14,12 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 /** Adaptador PostgreSQL de configuración: catálogos, parámetros y política versionada. */
 @Repository
 public class CatalogoConfiguracionJdbcAdapter implements
-        CatalogoRepository, ParametroRepository, PoliticaAdaptacionRepository {
+        CatalogoRepository, ParametroRepository, PoliticaAdaptacionRepository, ConfiguracionAdaptativaRepository {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final CatalogoJdbcResolver catalogos;
@@ -79,6 +82,69 @@ public class CatalogoConfiguracionJdbcAdapter implements
                 FROM CFG_POLITICA_ADAPTACION
                 WHERE id_politica_adaptacion = :idPoliticaAdaptacion
                 """, Map.of("idPoliticaAdaptacion", idPoliticaAdaptacion));
+    }
+
+    /**
+     * Actualiza únicamente la ventana de una política vigente. El motor la vuelve a consultar al
+     * registrar el siguiente intento; este adaptador no mantiene caché de configuración.
+     */
+    @Override
+    public Optional<PoliticaAdaptacion> actualizarVentana(
+            Long idPoliticaAdaptacion,
+            short tamanoVentanaIntentos,
+            String usuarioModificacion) {
+        int actualizadas = jdbc.update("""
+                UPDATE CFG_POLITICA_ADAPTACION
+                SET tamano_ventana_intentos = :tamanoVentanaIntentos,
+                    fecha_modificacion = CURRENT_TIMESTAMP,
+                    usuario_modificacion = :usuarioModificacion,
+                    version_registro = version_registro + 1
+                WHERE id_politica_adaptacion = :idPoliticaAdaptacion
+                  AND activa = TRUE
+                  AND vigente_desde <= CURRENT_TIMESTAMP
+                  AND (vigente_hasta IS NULL OR vigente_hasta >= CURRENT_TIMESTAMP)
+                """, new MapSqlParameterSource()
+                .addValue("idPoliticaAdaptacion", idPoliticaAdaptacion)
+                .addValue("tamanoVentanaIntentos", tamanoVentanaIntentos)
+                .addValue("usuarioModificacion", usuarioModificacion));
+        return actualizadas == 1 ? findById(idPoliticaAdaptacion) : Optional.empty();
+    }
+
+    /**
+     * Persiste sólo columnas de umbral y pista. La capa de aplicación ya validó qué campos son
+     * legales para cada código; este SQL nunca recibe nombres de columna desde la petición HTTP.
+     */
+    @Override
+    public Optional<PoliticaAdaptacion> actualizarRegla(
+            Long idPoliticaAdaptacion,
+            String codigoRegla,
+            CambioReglaAdaptacion cambio,
+            String usuarioModificacion) {
+        int actualizadas = jdbc.update("""
+                UPDATE CFG_REGLA_ADAPTACION
+                SET porcentaje_acierto_min = COALESCE(:porcentajeAciertoMin, porcentaje_acierto_min),
+                    porcentaje_acierto_max = COALESCE(:porcentajeAciertoMax, porcentaje_acierto_max),
+                    tiempo_promedio_max_ms = COALESCE(:tiempoPromedioMaxMs, tiempo_promedio_max_ms),
+                    racha_errores_min = COALESCE(:rachaErroresMin, racha_errores_min),
+                    habilitar_pista = COALESCE(:habilitarPista, habilitar_pista),
+                    fecha_modificacion = CURRENT_TIMESTAMP,
+                    usuario_modificacion = :usuarioModificacion,
+                    version_registro = version_registro + 1
+                WHERE id_politica_adaptacion = :idPoliticaAdaptacion
+                  AND codigo = :codigoRegla
+                  AND activa = TRUE
+                  AND vigente_desde <= CURRENT_TIMESTAMP
+                  AND (vigente_hasta IS NULL OR vigente_hasta >= CURRENT_TIMESTAMP)
+                """, new MapSqlParameterSource()
+                .addValue("idPoliticaAdaptacion", idPoliticaAdaptacion)
+                .addValue("codigoRegla", codigoRegla)
+                .addValue("porcentajeAciertoMin", cambio.porcentajeAciertoMin())
+                .addValue("porcentajeAciertoMax", cambio.porcentajeAciertoMax())
+                .addValue("tiempoPromedioMaxMs", cambio.tiempoPromedioMaxMs())
+                .addValue("rachaErroresMin", cambio.rachaErroresMin())
+                .addValue("habilitarPista", cambio.habilitarPista())
+                .addValue("usuarioModificacion", usuarioModificacion));
+        return actualizadas == 1 ? findById(idPoliticaAdaptacion) : Optional.empty();
     }
 
     private Optional<PoliticaAdaptacion> buscarPolitica(String sql, Map<String, ?> parametros) {

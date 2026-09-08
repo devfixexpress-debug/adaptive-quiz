@@ -2,7 +2,10 @@ package com.veltia.adaptivequiz.mobile.data.repository
 
 import com.veltia.adaptivequiz.mobile.data.dto.AccionAdaptacionDto
 import com.veltia.adaptivequiz.mobile.data.dto.AdaptacionDto
+import com.veltia.adaptivequiz.mobile.data.dto.ActualizarPoliticaAdaptativaRequestDto
+import com.veltia.adaptivequiz.mobile.data.dto.ActualizarReglaAdaptativaRequestDto
 import com.veltia.adaptivequiz.mobile.data.dto.AsignaturaDto
+import com.veltia.adaptivequiz.mobile.data.dto.ConfiguracionAdaptativaDto
 import com.veltia.adaptivequiz.mobile.data.dto.ContextoAprendizajeDto
 import com.veltia.adaptivequiz.mobile.data.dto.EjercicioDto
 import com.veltia.adaptivequiz.mobile.data.dto.IniciarSesionRequestDto
@@ -15,12 +18,16 @@ import com.veltia.adaptivequiz.mobile.data.dto.TemaDto
 import com.veltia.adaptivequiz.mobile.data.remote.AdaptiveQuizApi
 import com.veltia.adaptivequiz.mobile.domain.model.AccionAdaptacion
 import com.veltia.adaptivequiz.mobile.domain.model.Adaptacion
+import com.veltia.adaptivequiz.mobile.domain.model.ActualizacionReglaAdaptativa
 import com.veltia.adaptivequiz.mobile.domain.model.Asignatura
+import com.veltia.adaptivequiz.mobile.domain.model.ConfiguracionAdaptativa
 import com.veltia.adaptivequiz.mobile.domain.model.ContextoAprendizaje
 import com.veltia.adaptivequiz.mobile.domain.model.Ejercicio
 import com.veltia.adaptivequiz.mobile.domain.model.Opcion
 import com.veltia.adaptivequiz.mobile.domain.model.Pista
 import com.veltia.adaptivequiz.mobile.domain.model.ProgresoTema
+import com.veltia.adaptivequiz.mobile.domain.model.PoliticaAdaptativa
+import com.veltia.adaptivequiz.mobile.domain.model.ReglaAdaptativa
 import com.veltia.adaptivequiz.mobile.domain.model.ResultadoIntento
 import com.veltia.adaptivequiz.mobile.domain.model.SesionPractica
 import com.veltia.adaptivequiz.mobile.domain.model.SiguienteExperiencia
@@ -48,6 +55,28 @@ class AdaptiveQuizRepositoryImpl(private val api: AdaptiveQuizApi) : AdaptiveQui
 
     override suspend fun progreso(idEstudiante: Long): List<ProgresoTema> = api.progreso(idEstudiante).map(ProgresoTemaDto::toDomain)
     override suspend fun adaptaciones(idEstudiante: Long): List<Adaptacion> = api.adaptaciones(idEstudiante).map(AdaptacionDto::toDomain)
+
+    override suspend fun configuracionAdaptativa(): ConfiguracionAdaptativa = api.configuracionAdaptativa().toDomain()
+
+    override suspend fun actualizarReglaAdaptativa(
+        codigoRegla: String,
+        cambio: ActualizacionReglaAdaptativa
+    ): ConfiguracionAdaptativa = api.actualizarReglaAdaptativa(
+        codigoRegla,
+        ActualizarReglaAdaptativaRequestDto(
+            cambio.porcentajeAciertoMin,
+            cambio.porcentajeAciertoMax,
+            cambio.tiempoPromedioMaxMs,
+            cambio.rachaErroresMin,
+            cambio.habilitarPista
+        )
+    ).toDomain()
+
+    override suspend fun actualizarPoliticaAdaptativa(tamanoVentanaIntentos: Int): ConfiguracionAdaptativa =
+        api.actualizarPoliticaAdaptativa(ActualizarPoliticaAdaptativaRequestDto(tamanoVentanaIntentos)).toDomain()
+
+    override suspend fun restaurarConfiguracionTaller(): ConfiguracionAdaptativa =
+        api.restaurarConfiguracionTaller().toDomain()
 }
 
 fun AsignaturaDto.toDomain() = Asignatura(id, codigo, nombre, descripcion)
@@ -78,4 +107,24 @@ fun AdaptacionDto.toDomain() = Adaptacion(
 )
 fun ResultadoIntentoDto.toDomain() = ResultadoIntento(
     correcto, resultado, explicacion, progreso.toDomain(), adaptacion.toDomain()
+)
+fun ConfiguracionAdaptativaDto.toDomain() = ConfiguracionAdaptativa(
+    PoliticaAdaptativa(
+        politica.codigo,
+        politica.nombre,
+        politica.version,
+        politica.tamanoVentanaIntentos
+    ),
+    reglas.map {
+        ReglaAdaptativa(
+            it.codigo,
+            it.nombre,
+            it.prioridad,
+            it.porcentajeAciertoMin,
+            it.porcentajeAciertoMax,
+            it.tiempoPromedioMaxMs,
+            it.rachaErroresMin,
+            it.habilitarPista
+        )
+    }
 )

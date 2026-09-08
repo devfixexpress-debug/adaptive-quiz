@@ -112,6 +112,39 @@ data class ResultadoIntentoDto(
     val adaptacion: AdaptacionDto
 )
 
+data class PoliticaAdaptativaDto(
+    val codigo: String,
+    val nombre: String,
+    val version: Int,
+    val tamanoVentanaIntentos: Int
+)
+
+data class ReglaAdaptativaDto(
+    val codigo: String,
+    val nombre: String,
+    val prioridad: Int,
+    val porcentajeAciertoMin: BigDecimal?,
+    val porcentajeAciertoMax: BigDecimal?,
+    val tiempoPromedioMaxMs: Int?,
+    val rachaErroresMin: Int?,
+    val habilitarPista: Boolean
+)
+
+data class ConfiguracionAdaptativaDto(
+    val politica: PoliticaAdaptativaDto,
+    val reglas: List<ReglaAdaptativaDto>
+)
+
+data class ActualizarReglaAdaptativaRequestDto(
+    val porcentajeAciertoMin: BigDecimal? = null,
+    val porcentajeAciertoMax: BigDecimal? = null,
+    val tiempoPromedioMaxMs: Int? = null,
+    val rachaErroresMin: Int? = null,
+    val habilitarPista: Boolean? = null
+)
+
+data class ActualizarPoliticaAdaptativaRequestDto(val tamanoVentanaIntentos: Int)
+
 data class IniciarSesionRequestDto(val estudianteId: Long, val temaId: Long)
 data class RegistrarIntentoRequestDto(
     val sesionPracticaId: Long,

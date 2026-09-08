@@ -14,12 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoGraph
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -37,7 +39,8 @@ fun InicioScreen(
     viewModel: InicioViewModel,
     onComenzar: (Long) -> Unit,
     onMonitor: () -> Unit,
-    onProgreso: () -> Unit
+    onProgreso: () -> Unit,
+    onConfiguracion: () -> Unit
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
     Column(
@@ -45,8 +48,19 @@ fun InicioScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Spacer(Modifier.height(28.dp))
-        Text("AdaptiveQuiz", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-        Text("Aprende a tu ritmo", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text("AdaptiveQuiz", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
+                Text("Aprende a tu ritmo", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            }
+            IconButton(onClick = onConfiguracion) {
+                Icon(Icons.Outlined.Settings, "Configuración adaptativa para uso docente")
+            }
+        }
         Text("Estudiante Demo", style = MaterialTheme.typography.bodyLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = onProgreso) {

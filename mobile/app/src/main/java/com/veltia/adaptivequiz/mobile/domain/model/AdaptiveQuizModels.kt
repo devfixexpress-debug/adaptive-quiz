@@ -75,3 +75,34 @@ data class ResultadoIntento(
     val progreso: ProgresoTema,
     val adaptacion: Adaptacion
 )
+
+data class PoliticaAdaptativa(
+    val codigo: String,
+    val nombre: String,
+    val version: Int,
+    val tamanoVentanaIntentos: Int
+)
+
+data class ReglaAdaptativa(
+    val codigo: String,
+    val nombre: String,
+    val prioridad: Int,
+    val porcentajeAciertoMin: BigDecimal?,
+    val porcentajeAciertoMax: BigDecimal?,
+    val tiempoPromedioMaxMs: Int?,
+    val rachaErroresMin: Int?,
+    val habilitarPista: Boolean
+)
+
+data class ConfiguracionAdaptativa(
+    val politica: PoliticaAdaptativa,
+    val reglas: List<ReglaAdaptativa>
+)
+
+data class ActualizacionReglaAdaptativa(
+    val porcentajeAciertoMin: BigDecimal? = null,
+    val porcentajeAciertoMax: BigDecimal? = null,
+    val tiempoPromedioMaxMs: Int? = null,
+    val rachaErroresMin: Int? = null,
+    val habilitarPista: Boolean? = null
+)

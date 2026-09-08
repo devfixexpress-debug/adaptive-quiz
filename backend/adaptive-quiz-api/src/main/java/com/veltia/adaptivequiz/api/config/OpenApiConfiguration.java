@@ -13,7 +13,7 @@ public class OpenApiConfiguration {
     public OpenAPI adaptiveQuizOpenApi() {
         return new OpenAPI().info(new Info()
                 .title("AdaptiveQuiz API")
-                .version("0.1.0")
+                .version("1.0.0")
                 .description("API REST independiente para el Taller 001 de AdaptiveQuiz.")
                 .license(new License().name("Uso académico - UNI")));
     }

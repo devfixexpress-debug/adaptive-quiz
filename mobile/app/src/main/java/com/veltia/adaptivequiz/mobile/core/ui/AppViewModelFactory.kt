@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.veltia.adaptivequiz.mobile.domain.repository.AdaptiveQuizRepository
 import com.veltia.adaptivequiz.mobile.feature.inicio.InicioViewModel
+import com.veltia.adaptivequiz.mobile.feature.configuracion.ConfiguracionAdaptativaViewModel
 import com.veltia.adaptivequiz.mobile.feature.monitor.MonitorStore
 import com.veltia.adaptivequiz.mobile.feature.monitor.MonitorViewModel
 import com.veltia.adaptivequiz.mobile.feature.practica.PracticaViewModel
@@ -17,6 +18,8 @@ class AppViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
         modelClass.isAssignableFrom(InicioViewModel::class.java) -> InicioViewModel(repository) as T
+        modelClass.isAssignableFrom(ConfiguracionAdaptativaViewModel::class.java) ->
+            ConfiguracionAdaptativaViewModel(repository) as T
         modelClass.isAssignableFrom(PracticaViewModel::class.java) ->
             PracticaViewModel(repository, monitorStore, estudianteId) as T
         modelClass.isAssignableFrom(ProgresoViewModel::class.java) -> ProgresoViewModel(repository, estudianteId) as T

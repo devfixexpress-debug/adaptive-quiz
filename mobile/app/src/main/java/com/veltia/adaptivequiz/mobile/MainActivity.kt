@@ -9,6 +9,7 @@ import com.veltia.adaptivequiz.mobile.core.network.NetworkModule
 import com.veltia.adaptivequiz.mobile.core.ui.AdaptiveQuizTheme
 import com.veltia.adaptivequiz.mobile.core.ui.AppViewModelFactory
 import com.veltia.adaptivequiz.mobile.feature.inicio.InicioViewModel
+import com.veltia.adaptivequiz.mobile.feature.configuracion.ConfiguracionAdaptativaViewModel
 import com.veltia.adaptivequiz.mobile.feature.monitor.MonitorStore
 import com.veltia.adaptivequiz.mobile.feature.monitor.MonitorViewModel
 import com.veltia.adaptivequiz.mobile.feature.practica.PracticaViewModel
@@ -25,8 +26,9 @@ class MainActivity : ComponentActivity() {
                 val practica: PracticaViewModel = viewModel(factory = factory)
                 val progreso: ProgresoViewModel = viewModel(factory = factory)
                 val monitor: MonitorViewModel = viewModel(factory = factory)
+                val configuracion: ConfiguracionAdaptativaViewModel = viewModel(factory = factory)
                 Surface {
-                    AdaptiveQuizNavHost(inicio, practica, progreso, monitor)
+                    AdaptiveQuizNavHost(inicio, practica, progreso, monitor, configuracion)
                 }
             }
         }
