@@ -1,8 +1,8 @@
 # CI objetivo
 
 Codex deberá crear:
-- `backend-ci.yml`: compile + unit/integration tests.
-- `android-ci.yml`: lint + unit tests + assembleDebug.
+- `backend-ci.yml`: `mvn -B clean verify` con JDK 17.
+- `android-ci.yml`: Android SDK Platform 37, `lintDebug` y `assembleDebug`.
 - `quality.yml`: opcional.
 
-No bloquear M0 por CI; sí bloquear release v1.0.0 si los pipelines principales fallan.
+Los workflows principales bloquean la creación del tag/release v1.0.0 hasta que resulten verdes.
