@@ -1,6 +1,5 @@
 package com.veltia.adaptivequiz.domain.adaptation;
 
-import com.veltia.adaptivequiz.domain.model.ContextoAprendizaje;
 import com.veltia.adaptivequiz.domain.model.PoliticaAdaptacion;
 import java.util.Optional;
 
@@ -10,5 +9,5 @@ import java.util.Optional;
  */
 public interface AdaptationStrategy {
 
-    Optional<AdaptationDecision> decidir(ContextoAprendizaje contexto, PoliticaAdaptacion politica);
+    Optional<AdaptationDecision> decidir(AnalisisRendimiento analisis, PoliticaAdaptacion politica);
 }

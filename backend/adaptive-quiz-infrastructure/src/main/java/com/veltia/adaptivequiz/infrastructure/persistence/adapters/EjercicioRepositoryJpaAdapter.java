@@ -8,6 +8,7 @@ import com.veltia.adaptivequiz.infrastructure.persistence.jpa.PistaEjercicioJpaR
 import com.veltia.adaptivequiz.infrastructure.persistence.mappers.EjercicioPersistenceMapper;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -36,5 +37,34 @@ public class EjercicioRepositoryJpaAdapter implements EjercicioRepository {
                         entity,
                         opcionJpaRepository.findByIdEjercicioOrderByOrdenAsc(idEjercicio),
                         pistaJpaRepository.findByIdEjercicioOrderByOrdenAsc(idEjercicio)));
+    }
+
+    @Override
+    public Optional<Ejercicio> findSiguientePublicado(
+            Long idTema,
+            Long idItemDificultad,
+            Long idItemTipoEjercicio,
+            Set<Long> idEjerciciosExcluidos) {
+        Set<Long> excluidos = idEjerciciosExcluidos == null ? Set.of() : Set.copyOf(idEjerciciosExcluidos);
+        return ejercicioJpaRepository.findPublicadosPorTemaDificultadYTipo(
+                        idTema, idItemDificultad, idItemTipoEjercicio)
+                .stream()
+                .filter(entity -> !excluidos.contains(entity.getIdEjercicio()))
+                .findFirst()
+                .map(entity -> mapper.toDomain(
+                        entity,
+                        opcionJpaRepository.findByIdEjercicioOrderByOrdenAsc(entity.getIdEjercicio()),
+                        pistaJpaRepository.findByIdEjercicioOrderByOrdenAsc(entity.getIdEjercicio())));
+    }
+
+    @Override
+    public Optional<Ejercicio> findPrimerPublicadoPorTema(Long idTema, Long idItemTipoEjercicio) {
+        return ejercicioJpaRepository.findPublicadosPorTemaYTipo(idTema, idItemTipoEjercicio)
+                .stream()
+                .findFirst()
+                .map(entity -> mapper.toDomain(
+                        entity,
+                        opcionJpaRepository.findByIdEjercicioOrderByOrdenAsc(entity.getIdEjercicio()),
+                        pistaJpaRepository.findByIdEjercicioOrderByOrdenAsc(entity.getIdEjercicio())));
     }
 }

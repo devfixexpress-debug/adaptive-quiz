@@ -1,10 +1,10 @@
 package com.veltia.adaptivequiz.domain.adaptation;
 
 import com.veltia.adaptivequiz.domain.model.AccionEvento;
-import java.util.List;
+import com.veltia.adaptivequiz.domain.model.EventoAdaptacion;
 
-/** Ejecutará y confirmará las acciones de una decisión en la fase funcional del motor. */
+/** Ejecuta y deja trazabilidad de las acciones derivadas de una decisión. */
 public interface AdaptationActionExecutor {
 
-    List<AccionEvento> ejecutar(AdaptationDecision decision);
+    EventoAdaptacion ejecutar(AdaptationDecision decision);
 }

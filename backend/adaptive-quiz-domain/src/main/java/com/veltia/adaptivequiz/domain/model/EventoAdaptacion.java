@@ -7,6 +7,7 @@ public record EventoAdaptacion(
         Long idEventoAdaptacion,
         Long idContextoAprendizaje,
         Long idReglaAdaptacion,
+        String codigoRegla,
         ItemCatalogo origenDecision,
         ItemCatalogo nivelRendimiento,
         ItemCatalogo accionPrincipal,

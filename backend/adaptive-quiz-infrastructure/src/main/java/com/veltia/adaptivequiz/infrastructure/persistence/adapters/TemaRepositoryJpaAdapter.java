@@ -6,6 +6,7 @@ import com.veltia.adaptivequiz.infrastructure.persistence.jpa.TemaJpaRepository;
 import com.veltia.adaptivequiz.infrastructure.persistence.mappers.TemaPersistenceMapper;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,5 +25,10 @@ public class TemaRepositoryJpaAdapter implements TemaRepository {
         return jpaRepository.findByIdAsignaturaAndActivoTrueOrderByOrdenAscNombreAsc(idAsignatura).stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Tema> findActivoById(Long idTema) {
+        return jpaRepository.findByIdTemaAndActivoTrue(idTema).map(mapper::toDomain);
     }
 }

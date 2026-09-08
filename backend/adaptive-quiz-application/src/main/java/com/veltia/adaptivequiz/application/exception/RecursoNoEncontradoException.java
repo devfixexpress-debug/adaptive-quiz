@@ -6,4 +6,8 @@ public final class RecursoNoEncontradoException extends RuntimeException {
     public RecursoNoEncontradoException(String recurso, Long id) {
         super(recurso + " no fue encontrado para id=" + id);
     }
+
+    public RecursoNoEncontradoException(String recurso, String criterio) {
+        super(recurso + " no fue encontrado para " + criterio);
+    }
 }

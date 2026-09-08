@@ -3,11 +3,13 @@ package com.veltia.adaptivequiz.domain.adaptation;
 import com.veltia.adaptivequiz.domain.model.AccionEvento;
 import com.veltia.adaptivequiz.domain.model.ContextoAprendizaje;
 import com.veltia.adaptivequiz.domain.model.ItemCatalogo;
+import com.veltia.adaptivequiz.domain.model.ReglaAdaptacion;
 import java.util.List;
 
 /** Resultado explicable de una estrategia; se persistirá como ADP_EVENTO_ADAPTACION. */
 public record AdaptationDecision(
         ContextoAprendizaje contexto,
+        ReglaAdaptacion regla,
         ItemCatalogo nivelRendimiento,
         ItemCatalogo accionPrincipal,
         ItemCatalogo dificultadAnterior,
@@ -19,5 +21,19 @@ public record AdaptationDecision(
 ) {
     public AdaptationDecision {
         acciones = List.copyOf(acciones == null ? List.of() : acciones);
+    }
+
+    public AdaptationDecision conContexto(ContextoAprendizaje contextoPersistido) {
+        return new AdaptationDecision(
+                contextoPersistido,
+                regla,
+                nivelRendimiento,
+                accionPrincipal,
+                dificultadAnterior,
+                dificultadNueva,
+                tipoEjercicioAnterior,
+                tipoEjercicioNuevo,
+                motivo,
+                acciones);
     }
 }
