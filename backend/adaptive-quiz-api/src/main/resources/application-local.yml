@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    show-sql: ${JPA_SHOW_SQL:false}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always

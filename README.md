@@ -81,20 +81,31 @@ El diccionario se encuentra en:
 ## 6. Ejecución esperada
 
 ### Base de datos
-```bash
-docker compose up -d db
+```powershell
+Copy-Item .env.example .env
+docker compose --env-file .env up -d db
 ```
 
 ### Backend
-```bash
-cd backend
-./mvnw spring-boot:run
+```powershell
+# Desde adaptive-quiz/. La ruta absoluta permite que Spring lea el .env no versionado.
+$env:ADAPTIVEQUIZ_ENV_FILE = (Resolve-Path .env).Path
+Push-Location backend
+mvn clean verify
+mvn -pl adaptive-quiz-api -am spring-boot:run
 ```
+
+Con el backend en ejecución:
+
+~~~text
+http://localhost:8080/actuator/health
+http://localhost:8080/swagger-ui/index.html
+~~~
 
 ### Mobile
 Abrir `mobile/` en Android Studio y ejecutar el módulo `app`.
 
-> Los comandos se ajustarán cuando Codex genere el backend y el proyecto Android.
+El corte M0/M1 deja el backend y PostgreSQL ejecutables. No se implementó ni modificó la aplicación Android en este corte.
 
 ## 7. Trazabilidad
 

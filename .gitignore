@@ -101,6 +101,7 @@ application-secrets.yml
 !application-dev-local.example.yml
 !**/application-local.example.yml
 !**/application-dev-local.example.yml
+!backend/adaptive-quiz-api/src/main/resources/application-local.yml
 
 # =========================
 # Keys / Certificates
