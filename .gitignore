@@ -1,0 +1,188 @@
+# =========================
+# Java / Maven / Spring Boot
+# =========================
+target/
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.log
+logs/
+*.pid
+*.hprof
+
+# Maven wrapper: conservar estos si existen
+!.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.factorypath
+
+# =========================
+# Eclipse / STS
+# =========================
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# =========================
+# Node / Angular
+# =========================
+node_modules/
+dist/
+.angular/
+.cache/
+coverage/
+.nx/
+tmp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Si quieres versionar lockfile, elimina estas 3 líneas:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# =========================
+# Environment / Secrets
+# =========================
+.secrets/*
+!.secrets/
+!.secrets/*.example
+
+# Archivos ambientales reales (no versionar secretos)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.env
+!*.env.example
+env.dev
+env.qa
+env.uat
+env.prod
+
+# No versionar perfiles locales con credenciales reales
+application-local.yml
+application-dev-local.yml
+application-secret.yml
+application-secrets.yml
+**/application-local.yml
+**/application-dev-local.yml
+**/application-secret.yml
+**/application-secrets.yml
+
+# Mantener templates si existen
+!application-local.example.yml
+!application-dev-local.example.yml
+!**/application-local.example.yml
+!**/application-dev-local.example.yml
+
+# =========================
+# Keys / Certificates
+# =========================
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+id_rsa
+id_rsa.pub
+
+# =========================
+# Docker / Local runtime
+# =========================
+docker-compose.override.yml
+.docker/
+*.tar
+
+# =========================
+# Kubernetes secrets
+# =========================
+**/secrets.local.yaml
+**/secret.local.yaml
+**/*secret*.local.yaml
+
+# Ojo: no ignores todos los secrets.yaml si son plantillas controladas.
+# Si contienen secretos reales, cámbialos a *.example.yaml y sí ignóralos.
+
+# =========================
+# Database / Backups
+# =========================
+*.sql.bak
+*.dump
+*.backup
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+backups/
+dump/
+dumps/
+
+# =========================
+# Generated docs / reports
+# =========================
+*.tmp
+*.temp
+*.swp
+*.swo
+~$*
+.DS_Store
+Thumbs.db
+
+# =========================
+# Test / Reports
+# =========================
+surefire-reports/
+failsafe-reports/
+jacoco.exec
+.jacoco/
+allure-results/
+allure-report/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# Codex / AI local artifacts
+# =========================
+.codex/
+.cursor/
+.idea/
+.refact/
