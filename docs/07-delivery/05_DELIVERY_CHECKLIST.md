@@ -1,6 +1,6 @@
 # Checklist de entrega
 
-- [ ] Repositorio público/visible para docente (confirmación remota pendiente).
+- [x] Repositorio público/visible para docente.
 - [x] README actualizado.
 - [x] Proyecto Android compila: `lintDebug assembleDebug` local exitoso.
 - [x] Backend compila: `mvn clean verify` y `mvn package` locales exitosos.
@@ -11,7 +11,7 @@
 - [x] Adaptación automática visible (evidencia E2E certificada).
 - [x] No existe selector manual de dificultad en demo.
 - [x] Tests del motor verdes: 12 pruebas, 0 fallos.
-- [ ] CI verde (pendiente de GitHub Actions tras el push).
+- [x] CI verde: Backend CI y Android CI exitosos en GitHub Actions.
 - [x] Historial de commits del equipo.
 - [ ] Documento técnico <= 2 páginas (pendiente de comprobación al exportar).
 - [ ] Diagrama de arquitectura (no revalidado en esta fase).
