@@ -72,8 +72,6 @@ flowchart TB
 - **Datos:** PostgreSQL y Flyway; `database/` es la fuente canónica de las migraciones y el seed.
 - **Motor:** `LearningContextBuilder` → `DefaultPerformanceAnalyzer` → `AdaptationEngine` → `RuleBasedAdaptationStrategy` → `AdaptationActionPersistenceService`.
 
-AdaptiveQuiz es independiente de VAEF. Reutiliza convenciones técnicas consolidadas del workspace, pero no depende funcionalmente de servicios VAEF.
-
 ## Qué está implementado
 
 | Capacidad | Resultado verificable |
