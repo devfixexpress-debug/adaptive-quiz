@@ -1,46 +1,49 @@
-# Arquitectura
+# Arquitectura certificada
 
 ## Principios
-- Proyecto independiente de VAEF.
-- Reutiliza el generador backend y estándares del workspace VELTIA/VAEF.
-- Backend modular.
-- Mobile independiente.
-- Motor adaptativo desacoplado.
-- Persistencia relacional normalizada.
-- Parametrización explícita.
-- Auditoría de decisiones.
-- IA detrás de un puerto/estrategia.
 
-## Backend objetivo
+- AdaptiveQuiz es un proyecto independiente de VAEF; reutiliza convenciones técnicas del workspace sin dependencias funcionales con otros servicios.
+- La adaptación pertenece al backend; Android consume y explica la decisión, pero no replica reglas ni umbrales.
+- El modelo de datos es relacional, parametrizado y auditable.
+- Las migraciones V1, V1.1 y V2 son inmutables; Flyway las aplica desde los recursos empaquetados a partir de la fuente canónica `database/`.
+- La IA no está conectada en v1.0.0. `AdaptationStrategy` sólo conserva una extensión futura desacoplada.
+
+## Módulos backend
 
 ```text
 backend/
-├── pom.xml
-├── adaptive-quiz-domain/
-├── adaptive-quiz-application/
-├── adaptive-quiz-infrastructure/
-└── adaptive-quiz-api/
+├── adaptive-quiz-domain/         modelo, contratos y motor determinista
+├── adaptive-quiz-application/    casos de uso y orquestación de práctica
+├── adaptive-quiz-infrastructure/ adaptadores JPA/JDBC, mappers y PostgreSQL
+└── adaptive-quiz-api/            Spring Boot, REST, Flyway, OpenAPI y Actuator
 ```
 
-### Domain
-Entidades, value objects, contratos de repositorio, reglas de dominio.
-
-### Application
-Casos de uso, comandos/queries, servicios de aplicación.
-
-### Infrastructure
-JPA, repositorios, mappers, integración de BD y futuros proveedores IA.
-
-### API
-REST, DTO, validación, OpenAPI, configuración Spring.
-
-## Regla de dependencia
+## Regla de dependencias
 
 ```text
-api -> application -> domain
-          ^
-          |
-infrastructure
+API → APPLICATION → DOMAIN
+         ↓
+  INFRASTRUCTURE (adaptadores de los puertos)
+         ↓
+     PostgreSQL
 ```
 
-El dominio no depende de Spring, JPA, Android ni IA.
+El dominio no depende de Spring Web, JPA, Android ni de un proveedor de IA. En ejecución, la composición de dependencias conecta los puertos de dominio/aplicación con los adaptadores de infraestructura.
+
+## Flujo de responsabilidades
+
+```mermaid
+flowchart LR
+    U["Android: UI + ViewModel"] --> R["Repositorio Retrofit"] --> A["API REST"]
+    A --> P["Application: PracticaService"]
+    P --> C["LearningContextBuilder"]
+    C --> N["DefaultPerformanceAnalyzer"]
+    N --> E["AdaptationEngine + RuleBasedAdaptationStrategy"]
+    E --> X["AdaptationActionPersistenceService"]
+    X --> D[("PostgreSQL")]
+    X --> A
+```
+
+## Persistencia y esquema
+
+`database/` conserva la fuente canónica: V1 es el esquema, V1.1 es el seed y V2 incorpora los parámetros del MVP. Durante el empaquetado, `adaptive-quiz-api` incluye esos SQL en `classpath:db/migration`; Flyway los ejecuta y Hibernate sólo valida el esquema con `ddl-auto=validate`.

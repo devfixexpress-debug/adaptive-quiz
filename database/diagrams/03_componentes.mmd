@@ -1,21 +1,20 @@
 flowchart TB
-    subgraph Mobile
-      UI[Compose UI]
-      VM[ViewModel]
-      CE[Context Builder]
-      PE[Performance Analyzer]
-      AE[Adaptation Engine]
-      EX[Action Executor]
-      UI --> VM --> CE --> PE --> AE --> EX --> UI
+    subgraph Mobile[Android]
+      UI[Compose Screens]
+      VM[ViewModel + StateFlow]
+      REPO[Repositorio + Retrofit]
+      UI --> VM --> REPO
     end
-    subgraph Backend
-      API[REST API]
-      APP[Application]
-      DOM[Domain]
-      INF[Infrastructure]
+
+    subgraph Backend[Spring Boot]
+      API[Controllers REST]
+      APP[Application<br/>PracticaService]
+      DOM[Domain<br/>Contexto · Análisis · Estrategia]
+      INF[Infrastructure<br/>JPA/JDBC · Mappers]
       API --> APP --> DOM
-      INF --> DOM
+      APP --> INF
     end
+
     DB[(PostgreSQL)]
-    VM --> API
+    REPO -->|HTTP| API
     INF --> DB

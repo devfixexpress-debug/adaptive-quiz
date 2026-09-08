@@ -7,10 +7,10 @@
 | `02-analysis/` | problema, modelo funcional, dominio, casos de uso, reglas, semántica y eventos |
 | `03-architecture/` | arquitectura, componentes, despliegue y decisiones ADR |
 | `04-adaptive-engine/` | contexto, rendimiento, reglas y pipeline adaptativo |
-| `05-api/` | contrato REST inicial |
+| `05-api/` | contrato REST implementado |
 | `06-testing/` | estrategia y casos de prueba |
-| `07-delivery/` | documento de 2 páginas, sustentación, demo y checklist |
-| `08-evidence/` | evidencias de ejecución, pruebas y CI |
+| `07-delivery/` | documento técnico, matriz de cumplimiento, sustentación, demo y checklist |
+| `08-evidence/` | evidencias de ejecución, pruebas, CI y auditoría final |
 | `09-ai-roadmap/` | IA posterior al cierre obligatorio |
 | `10-codex/` | prompt de implementación para Codex |
 

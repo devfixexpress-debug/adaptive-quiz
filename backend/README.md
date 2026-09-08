@@ -15,6 +15,7 @@ Los scripts fuente permanecen exclusivamente en:
 
 - `../database/migrations/postgresql/V1__adaptive_quiz_schema.sql`
 - `../database/seeds/postgresql/V1_1__adaptive_quiz_seed.sql`
+- `../database/migrations/postgresql/V2__adaptive_quiz_mvp.sql`
 
 El módulo API los empaqueta como `classpath:db/migration` durante Maven. Hibernate valida el esquema; no lo crea.
 

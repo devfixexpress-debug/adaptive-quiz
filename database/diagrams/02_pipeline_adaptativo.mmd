@@ -1,6 +1,7 @@
 flowchart LR
-    C[Contexto<br/>aciertos, errores, tiempo, rachas] --> P[Procesamiento<br/>PerformanceAnalyzer]
-    P --> D[Decisión<br/>AdaptationEngine]
-    D --> A[Adaptación<br/>dificultad, tipo, pista]
-    A --> N[Siguiente ejercicio]
-    N --> C
+    I[PRA_INTENTO] --> C[Contexto<br/>LearningContextBuilder]
+    C --> P[Procesamiento<br/>DefaultPerformanceAnalyzer]
+    P --> R[Decisión<br/>AdaptationEngine + RuleBasedAdaptationStrategy]
+    R --> A[Adaptación<br/>dificultad y pista]
+    A --> E[Persistencia<br/>ADP_CONTEXTO + ADP_EVENTO + ADP_ACCION]
+    E --> N[Siguiente ejercicio]

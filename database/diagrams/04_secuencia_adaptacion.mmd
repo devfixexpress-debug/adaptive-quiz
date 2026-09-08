@@ -1,17 +1,26 @@
 sequenceDiagram
     actor E as Estudiante
-    participant UI as Mobile
-    participant P as PracticeService
-    participant C as ContextBuilder
-    participant A as AdaptationEngine
+    participant UI as Android
+    participant API as PracticaController
+    participant P as PracticaService
+    participant C as LearningContextBuilder
+    participant N as DefaultPerformanceAnalyzer
+    participant S as RuleBasedAdaptationStrategy
+    participant X as AdaptationActionPersistenceService
     participant DB as PostgreSQL
+
     E->>UI: Responde ejercicio
-    UI->>P: registrar intento
-    P->>DB: PRA_INTENTO / RESPUESTA
+    UI->>API: POST /api/v1/intentos
+    API->>P: registrarIntento
+    P->>DB: PRA_INTENTO / PRA_RESPUESTA / opciones
     P->>C: construir contexto
-    C->>DB: guardar ADP_CONTEXTO
-    C->>A: evaluar(contexto)
-    A->>DB: cargar política/reglas
-    A->>DB: guardar evento + acciones
-    A-->>UI: decisión explicable
-    UI-->>E: siguiente dificultad / pista
+    C->>DB: consultar ventana reciente de intentos
+    P->>N: analizar contexto
+    P->>S: decidir por política y prioridad
+    S->>DB: leer CFG_POLITICA y CFG_REGLA
+    P->>DB: guardar ADP_CONTEXTO
+    P->>X: ejecutar adaptación
+    X->>DB: progreso + ADP_EVENTO + ADP_ACCION
+    P-->>API: resultado y decisión explicable
+    API-->>UI: respuesta REST
+    UI-->>E: dificultad o pista de la siguiente experiencia

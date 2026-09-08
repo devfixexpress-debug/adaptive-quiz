@@ -20,6 +20,7 @@
 - `database/diagrams/06_er_logico.mmd`
 - `database/diagrams/07_despliegue.mmd`
 - `database/migrations/postgresql/V1__adaptive_quiz_schema.sql`
+- `database/migrations/postgresql/V2__adaptive_quiz_mvp.sql`
 - `database/seeds/postgresql/V1_1__adaptive_quiz_seed.sql`
 - `docker/README.md`
 - `docs/00-project/00_PROJECT_CHARTER.md`
@@ -63,7 +64,9 @@
 - `docs/07-delivery/03_DEMO_SCRIPT.md`
 - `docs/07-delivery/04_TECHNICAL_CHALLENGE_PREP.md`
 - `docs/07-delivery/05_DELIVERY_CHECKLIST.md`
+- `docs/07-delivery/06_CUMPLIMIENTO_TALLER_001.md`
 - `docs/08-evidence/README.md`
+- `docs/08-evidence/FINAL_RELEASE_AUDIT.md`
 - `docs/09-ai-roadmap/01_AI_VISION.md`
 - `docs/09-ai-roadmap/02_AI_ARCHITECTURE.md`
 - `docs/10-codex/01_PROMPT_IMPLEMENTACION.md`

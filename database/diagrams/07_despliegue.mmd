@@ -1,4 +1,3 @@
 flowchart LR
-    A[Android Device / Emulator] -->|HTTP REST| S[Spring Boot :8080]
-    S -->|JDBC| P[(PostgreSQL :5432)]
-    S -. futuro .-> LLM[Proveedor IA]
+    A[Emulador Android<br/>10.0.2.2:8080] -->|HTTP REST| S[Spring Boot<br/>localhost:8080]
+    S -->|JDBC / JPA| P[(PostgreSQL Docker<br/>host:55432 → contenedor:5432)]

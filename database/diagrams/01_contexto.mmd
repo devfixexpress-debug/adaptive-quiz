@@ -1,5 +1,6 @@
 flowchart LR
-    E[Estudiante] --> M[Aplicación móvil AdaptiveQuiz]
-    M --> B[Backend Spring Boot]
-    B --> D[(PostgreSQL)]
-    B -. futuro .-> IA[Proveedor IA]
+    E[Estudiante] -->|responde| M[Aplicación móvil AdaptiveQuiz]
+    M -->|intento y tiempo| B[Backend Spring Boot]
+    B -->|PRA_INTENTO y progreso| D[(PostgreSQL)]
+    D -->|intentos recientes, rachas y dificultad| B
+    B -->|contexto y decisión explicable| M
