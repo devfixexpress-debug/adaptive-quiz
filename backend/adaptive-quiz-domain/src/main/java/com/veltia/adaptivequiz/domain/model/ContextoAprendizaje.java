@@ -2,7 +2,11 @@ package com.veltia.adaptivequiz.domain.model;
 
 import java.math.BigDecimal;
 
-/** Snapshot auditable de métricas calculadas a partir de intentos recientes. */
+/**
+ * Entrada auditable del pipeline adaptativo. Representa una ventana de intentos recientes con
+ * precisión, tiempo, rachas y estado actual; la construye LearningContextBuilder y la consume el
+ * analizador. No contiene reglas, no asigna dificultad y no decide ni persiste por sí misma.
+ */
 public record ContextoAprendizaje(
         Long idContextoAprendizaje,
         Long idIntentoDisparador,

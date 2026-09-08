@@ -20,6 +20,10 @@ Los errores se devuelven con estado HTTP y el contrato uniforme
 | GET | `/estudiantes/{id}/progreso/{temaId}` | Obtiene el progreso del estudiante en un tema. |
 | GET | `/estudiantes/{id}/adaptaciones` | Lista las decisiones adaptativas persistidas del estudiante. |
 | GET | `/adaptaciones/{id}` | Obtiene contexto, decisión y acciones de una adaptación. |
+| GET | `/configuracion-adaptativa` | Consulta la política activa y los umbrales docentes permitidos. |
+| PATCH | `/configuracion-adaptativa/reglas/{codigoRegla}` | Modifica sólo umbrales permitidos de `R_ALTO`, `R_BAJO_PRECISION` o `R_BAJO_RACHA`. |
+| PATCH | `/configuracion-adaptativa/politica` | Modifica la ventana de intentos de la política activa. |
+| POST | `/configuracion-adaptativa/restaurar-taller` | Restaura los valores certificados del Taller sin tocar datos de aprendizaje. |
 
 ## Catálogo académico
 
@@ -223,3 +227,87 @@ del motor, contexto y acciones ejecutadas.
 
 Respuesta `200 OK`: una decisión adaptativa con el mismo contrato detallado. Devuelve
 `404 Not Found` si no existe.
+
+## Configuración adaptativa para uso docente
+
+Estos endpoints administran política, reglas y umbrales persistidos. No permiten seleccionar ni
+asignar manualmente la dificultad de un estudiante, ni cambiar códigos, prioridad, acción,
+catálogos o datos de práctica.
+
+### GET /configuracion-adaptativa
+
+Respuesta `200 OK`:
+
+~~~json
+{
+  "politica": {
+    "codigo": "POLITICA_BASE_TALLER",
+    "nombre": "Política base Taller 001",
+    "version": 1,
+    "tamanoVentanaIntentos": 5
+  },
+  "reglas": [
+    {
+      "codigo": "R_ALTO",
+      "nombre": "Alto rendimiento",
+      "prioridad": 30,
+      "porcentajeAciertoMin": 0.80,
+      "porcentajeAciertoMax": null,
+      "tiempoPromedioMaxMs": 20000,
+      "rachaErroresMin": null,
+      "habilitarPista": false
+    }
+  ]
+}
+~~~
+
+### PATCH /configuracion-adaptativa/reglas/{codigoRegla}
+
+Sólo acepta campos habilitados para la regla indicada. El código debe ser `R_ALTO`,
+`R_BAJO_PRECISION` o `R_BAJO_RACHA`.
+
+Ejemplo para subir con 70 %:
+
+~~~json
+{
+  "porcentajeAciertoMin": 0.70
+}
+~~~
+
+Ejemplo para reforzar con dos errores consecutivos:
+
+~~~json
+{
+  "rachaErroresMin": 2,
+  "habilitarPista": true
+}
+~~~
+
+La respuesta `200 OK` devuelve la configuración completa vigente. Los porcentajes deben estar
+entre `0` y `1`, el tiempo y rachas deben ser positivos o cero, y las restricciones del modelo se
+validan antes de persistir.
+
+### PATCH /configuracion-adaptativa/politica
+
+Solicitud para cambiar la ventana reciente:
+
+~~~json
+{
+  "tamanoVentanaIntentos": 3
+}
+~~~
+
+El valor permitido es de `1` a `50`, de acuerdo con el `CHECK` certificado de
+`CFG_POLITICA_ADAPTACION`. La respuesta `200 OK` devuelve la configuración actualizada.
+
+### POST /configuracion-adaptativa/restaurar-taller
+
+No requiere cuerpo. Restaura exclusivamente los valores base de `POLITICA_BASE_TALLER`:
+
+- ventana: `5`;
+- `R_BAJO_RACHA.racha_errores_min`: `3`;
+- `R_BAJO_PRECISION.porcentaje_acierto_max`: `0.40`;
+- `R_ALTO.porcentaje_acierto_min`: `0.80`;
+- `R_ALTO.tiempo_promedio_max_ms`: `20000`.
+
+No modifica intentos, contextos, eventos, progreso, ejercicios ni estudiantes.

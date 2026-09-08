@@ -30,6 +30,14 @@ API → APPLICATION → DOMAIN
 
 El dominio no depende de Spring Web, JPA, Android ni de un proveedor de IA. En ejecución, la composición de dependencias conecta los puertos de dominio/aplicación con los adaptadores de infraestructura.
 
+## Configuración paramétrica para sustentación
+
+La pantalla Android identificada como uso docente consulta una API limitada. Esta API actualiza sólo
+la ventana de `CFG_POLITICA_ADAPTACION` y los umbrales/pista permitidos de
+`CFG_REGLA_ADAPTACION`; no crea reglas ni asigna dificultad a estudiantes. La siguiente evaluación
+lee la política persistida por su identificador de sesión, por lo que no requiere recompilar ni
+reiniciar el servicio. El detalle visual está en [Configuración paramétrica](diagrams/08_CONFIGURACION_PARAMETRICA.mmd).
+
 ## Flujo de responsabilidades
 
 ```mermaid

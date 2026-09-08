@@ -8,6 +8,7 @@
 | Práctica | `PracticaScreen`, `PracticaViewModel`, `ResultadoScreen`, `TiempoRespuesta`. |
 | Observabilidad adaptativa | `MonitorScreen`, `MonitorViewModel`, `MonitorStore`, `AdaptacionVisual`. |
 | Progreso | `ProgresoScreen`, `ProgresoViewModel`. |
+| Configuración docente | `ConfiguracionAdaptativaScreen`, `ConfiguracionAdaptativaViewModel`; transforma unidades para la UI y delega los cambios a la API. |
 | Datos | `AdaptiveQuizApi`, `AdaptiveQuizRepository`, `AdaptiveQuizRepositoryImpl`, `NetworkModule`. |
 
 Compose y los ViewModel no contienen reglas de adaptación: muestran el resultado que retorna la API.
@@ -21,6 +22,7 @@ Compose y los ViewModel no contienen reglas de adaptación: muestran el resultad
 | Contexto y procesamiento | `LearningContextBuilder`, `PerformanceAnalyzer`, `DefaultPerformanceAnalyzer`. |
 | Decisión | `AdaptationEngine`, `AdaptationStrategy`, `RuleBasedAdaptationStrategy`, `AdaptationDecision`. |
 | Adaptación y auditoría | `AdaptationActionExecutor`, `AdaptationActionPersistenceService`, `MotorAdaptativoFactory`. |
+| Configuración docente | `ConfiguracionAdaptativaController`, `ConfiguracionAdaptativaService` y `CatalogoConfiguracionJdbcAdapter`; sólo actualizan ventana y umbrales permitidos. |
 | Infraestructura | Adaptadores JPA/JDBC, repositorios, mappers, PostgreSQL y Flyway. |
 
 ## Persistencia principal

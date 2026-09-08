@@ -7,6 +7,8 @@
 - `MOBILE_BUILD_VALIDATION.md`: build del APK M5/M6.
 - `END_TO_END_VALIDATION.md`: flujo integrado ejecutado con Spring Boot y PostgreSQL reales.
 - `FINAL_RELEASE_AUDIT.md`: auditoría documental y de reproducibilidad de la entrega v1.0.0.
+- `CONFIGURACION_ADAPTATIVA_AUDIT.md`: parámetros consumidos realmente y límites de administración docente.
+- `PARAMETRIC_ADAPTATION_VALIDATION.md`: cambio en caliente, decisiones reales y restauración del baseline del Taller.
 
 No almacenar secretos, tokens ni contraseñas. La evidencia de integración corresponde a runtime
 real; las pruebas unitarias deterministas complementan esa evidencia sin sustituirla.

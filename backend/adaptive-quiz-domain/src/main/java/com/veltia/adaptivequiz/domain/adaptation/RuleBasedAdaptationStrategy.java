@@ -12,8 +12,11 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 /**
- * Estrategia determinista: evalúa reglas configuradas por prioridad ascendente y no depende de UI,
- * JPA ni IA.
+ * Etapa DECISIÓN certificada. Recibe la política y sus reglas ya leídas de CFG_POLITICA_ADAPTACION
+ * y CFG_REGLA_ADAPTACION; por eso los umbrales no están hardcodeados y una edición persistida se
+ * usa en la siguiente evaluación sin recompilar. Evalúa prioridad ascendente, respeta los límites
+ * de la escala BASICO/INTERMEDIO/AVANZADO y construye acciones explicables. No consulta JPA/UI,
+ * no persiste eventos y no asigna manualmente un nivel al estudiante.
  */
 public final class RuleBasedAdaptationStrategy implements AdaptationStrategy {
 

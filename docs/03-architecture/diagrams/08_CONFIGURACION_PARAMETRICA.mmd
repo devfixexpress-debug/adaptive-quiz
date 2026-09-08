@@ -1,0 +1,12 @@
+flowchart TB
+    D[Configuración docente<br/>Uso para sustentación] --> API[API de configuración adaptativa]
+    API --> P[CFG_POLITICA_ADAPTACION<br/>ventana reciente]
+    API --> R[CFG_REGLA_ADAPTACION<br/>precisión · tiempo · racha · pista]
+    C[CFG_PARAMETRO<br/>pesos auxiliares y tiempo rápido] --> F[MotorAdaptativoFactory]
+    P --> LC[LearningContextBuilder]
+    R --> E[AdaptationEngine]
+    F --> E
+    LC --> E
+    E --> DA[Decisión automática<br/>R_ALTO · R_BAJO_* · R_MEDIO]
+    DA --> A[Adaptación<br/>dificultad y pista]
+    A --> S[Estudiante]

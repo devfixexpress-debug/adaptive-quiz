@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
-/** Construye snapshots auditables a partir de la ventana reciente de intentos reales. */
+/**
+ * Etapa CONTEXTO del pipeline. Recibe el intento disparador, la política vigente y el progreso;
+ * consulta la ventana reciente indicada por la política y devuelve un snapshot auditable con
+ * precisión, tiempo, rachas, dificultad y tipo. No clasifica el rendimiento, no elige una regla
+ * ni persiste decisiones.
+ */
 @Service
 public class LearningContextBuilder {
 

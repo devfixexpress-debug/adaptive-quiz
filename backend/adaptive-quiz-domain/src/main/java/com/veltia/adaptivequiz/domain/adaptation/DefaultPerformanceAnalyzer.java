@@ -6,7 +6,10 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
- * Calcula métricas explicativas. No sustituye la evaluación determinista de CFG_REGLA_ADAPTACION.
+ * Etapa PROCESAMIENTO del pipeline. Recibe un {@link ContextoAprendizaje} y produce velocidad,
+ * consistencia y puntaje explicativo. Los pesos y el tiempo rápido llegan desde CFG_PARAMETRO por
+ * medio de la fábrica; este analizador no consulta base de datos, no decide reglas ni cambia el
+ * progreso. La clasificación certificada sigue siendo determinista en CFG_REGLA_ADAPTACION.
  */
 public final class DefaultPerformanceAnalyzer implements PerformanceAnalyzer {
 

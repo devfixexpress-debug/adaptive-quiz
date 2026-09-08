@@ -15,7 +15,11 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
-/** Ejecuta el cambio de progreso y persiste la decisión/auditoría en la misma transacción. */
+/**
+ * Etapa ADAPTACIÓN del pipeline. Recibe una decisión con contexto ya persistido, actualiza el
+ * progreso y guarda evento y acciones en la misma transacción. Devuelve el evento auditable; no
+ * recalcula métricas, no selecciona reglas, no accede a UI y no cambia parámetros de política.
+ */
 @Service
 public class AdaptationActionPersistenceService implements AdaptationActionExecutor {
 

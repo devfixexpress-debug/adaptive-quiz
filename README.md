@@ -53,7 +53,7 @@ El backend persiste el contexto, la regla aplicada, la acción, la dificultad an
 ```mermaid
 flowchart TB
     subgraph M["Android · Kotlin / Compose"]
-        UI["Pantallas: Inicio · Práctica · Resultado · Monitor · Progreso"] --> VM["ViewModel + StateFlow"] --> R["Repositorio + Retrofit"]
+        UI["Pantallas: Inicio · Práctica · Resultado · Monitor · Progreso · Configuración docente"] --> VM["ViewModel + StateFlow"] --> R["Repositorio + Retrofit"]
     end
 
     R -->|"HTTP REST"| API
@@ -122,7 +122,7 @@ En una consola distinta:
 $env:ADAPTIVEQUIZ_ENV_FILE = (Resolve-Path .env).Path
 Push-Location backend
 mvn -B clean verify
-java -jar adaptive-quiz-api/target/adaptive-quiz-api-1.0.0.jar
+& "$env:JAVA_HOME\bin\java.exe" -jar adaptive-quiz-api/target/adaptive-quiz-api-1.0.0.jar
 ```
 
 Espere el arranque de Spring Boot y compruebe:
@@ -134,6 +134,7 @@ http://localhost:8080/swagger-ui/index.html
 ```
 
 El health esperado es `UP`. Hibernate valida el esquema (`ddl-auto=validate`); no lo genera automáticamente.
+`JAVA_HOME` debe referir a JDK 17; usarlo explícitamente evita ejecutar el JAR con una versión antigua de Java que pudiera estar primero en `PATH`.
 
 ### 3. Ejecutar Android
 
@@ -163,8 +164,20 @@ El APK debug queda en `mobile/app/build/outputs/apk/debug/app-debug.apk`. Para e
 | GET | `/api/v1/estudiantes/{id}/progreso/{temaId}` |
 | GET | `/api/v1/estudiantes/{id}/adaptaciones` |
 | GET | `/api/v1/adaptaciones/{id}` |
+| GET | `/api/v1/configuracion-adaptativa` |
+| PATCH | `/api/v1/configuracion-adaptativa/reglas/{codigoRegla}` |
+| PATCH | `/api/v1/configuracion-adaptativa/politica` |
+| POST | `/api/v1/configuracion-adaptativa/restaurar-taller` |
 
 El detalle de solicitudes y respuestas está en el [contrato REST](docs/05-api/01_API_CONTRACT.md) y también se puede consultar desde Swagger.
+
+## Configuración adaptativa para la sustentación
+
+Desde el icono de configuración de Inicio se abre una pantalla identificada como **Uso docente / demostración**. Permite consultar y modificar, sin recompilar, la ventana reciente y los umbrales ya persistidos de precisión, tiempo, racha y pista.
+
+Por ejemplo, el docente puede cambiar `R_ALTO` de 80 % a 70 %, registrar una nueva práctica y observar que la siguiente decisión interpreta el nuevo valor. También puede cambiar tres a dos errores consecutivos o la ventana de cinco a tres intentos. Antes de guardar, la app muestra un resumen de cambios; **Restaurar valores del Taller** devuelve la política a los valores certificados.
+
+Esto no modifica manualmente el nivel del estudiante. Sólo modifica la política que el motor interpreta automáticamente en la siguiente evaluación. Swagger ofrece el mismo flujo como plan B mediante los endpoints de configuración.
 
 ## Cómo demostrar la adaptación
 
@@ -183,7 +196,9 @@ El guion exacto de cinco minutos está en [03_DEMO_SCRIPT.md](docs/07-delivery/0
 - [Análisis de rendimiento](backend/adaptive-quiz-domain/src/main/java/com/veltia/adaptivequiz/domain/adaptation/DefaultPerformanceAnalyzer.java).
 - [Estrategia determinista](backend/adaptive-quiz-domain/src/main/java/com/veltia/adaptivequiz/domain/adaptation/RuleBasedAdaptationStrategy.java).
 - [Persistencia de acciones](backend/adaptive-quiz-application/src/main/java/com/veltia/adaptivequiz/application/service/AdaptationActionPersistenceService.java).
+- [Configuración docente](backend/adaptive-quiz-application/src/main/java/com/veltia/adaptivequiz/application/service/ConfiguracionAdaptativaService.java).
 - [Monitor Android](mobile/app/src/main/java/com/veltia/adaptivequiz/mobile/feature/monitor/MonitorScreen.kt).
+- [Pantalla Android de configuración](mobile/app/src/main/java/com/veltia/adaptivequiz/mobile/feature/configuracion/ConfiguracionAdaptativaScreen.kt).
 - [Migraciones canónicas](database/migrations/postgresql/) y [seed canónico](database/seeds/postgresql/).
 
 ## Calidad, CI y release

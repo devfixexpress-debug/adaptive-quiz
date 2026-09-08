@@ -5,7 +5,11 @@ import com.veltia.adaptivequiz.domain.model.PoliticaAdaptacion;
 import java.util.Objects;
 import java.util.Optional;
 
-/** El motor sólo delega a una estrategia; no conoce IA, UI ni infraestructura. */
+/**
+ * Une PROCESAMIENTO y DECISIÓN: recibe contexto y política, pide métricas al analizador y delega
+ * la elección a una estrategia. Entrega una {@link AdaptationDecision} opcional; no consulta UI,
+ * no persiste datos, no modifica dificultad directamente y no conoce proveedores de IA.
+ */
 public final class AdaptationEngine {
 
     private final PerformanceAnalyzer performanceAnalyzer;

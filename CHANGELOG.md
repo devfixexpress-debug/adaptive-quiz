@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Configuración adaptativa de uso docente para consultar, modificar de forma limitada y restaurar
+  los umbrales persistidos de la política certificada, sin selector manual de dificultad.
+
+### Changed
+
+- Documentado el núcleo adaptativo y el procedimiento reproducible de cambio de parámetros en vivo.
+
 ## [1.0.0] - 2026-09-08
 
 ### Added

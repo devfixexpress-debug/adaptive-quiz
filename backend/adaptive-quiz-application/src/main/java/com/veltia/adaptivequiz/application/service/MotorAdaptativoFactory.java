@@ -13,7 +13,13 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 
-/** Ensambla el motor con parámetros y catálogos reales, sin IDs físicos embebidos. */
+/**
+ * Ensambla el motor para cada evaluación con catálogos y parámetros reales, sin IDs físicos
+ * embebidos. Los pesos y TIEMPO_RAPIDO_MS provienen de CFG_PARAMETRO; las condiciones de decisión
+ * provienen de las reglas que recibe la estrategia desde CFG_REGLA_ADAPTACION. No guarda valores
+ * en caché, por lo que una modificación persistida afecta la siguiente decisión sin recompilar ni
+ * reiniciar. Esta fábrica no decide desempeño, no altera reglas y no interactúa con Android.
+ */
 @Service
 public class MotorAdaptativoFactory {
 

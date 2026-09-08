@@ -52,8 +52,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Vertical slice INTENTO_RESUELTO: persiste la práctica, construye contexto, decide con reglas y
- * ejecuta la adaptación auditable.
+ * Orquesta el vertical slice de práctica. Recibe comandos de sesión e intento y devuelve el
+ * resultado que Android debe mostrar. Reúne las etapas del pipeline, pero no define umbrales ni
+ * decide dificultad por sí mismo: delega contexto, análisis, estrategia y persistencia a sus
+ * responsabilidades especializadas.
  */
 @Service
 @Transactional
@@ -186,6 +188,7 @@ public class PracticaService implements
 
     @Override
     public ResultadoIntento registrar(RegistrarIntentoCommand command) {
+        // 1. Validar la sesión, el ejercicio y las opciones antes de alterar datos de práctica.
         validarRegistro(command);
         SesionPractica sesion = sesionPracticaRepository.findById(command.idSesionPractica())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Sesión de práctica", command.idSesionPractica()));
@@ -202,6 +205,7 @@ public class PracticaService implements
                         "estudiante=" + sesion.idEstudiante() + ", tema=" + sesion.idTema()));
         validarOpciones(ejercicio, command.idOpcionesSeleccionadas());
 
+        // 2. Calificar y persistir el intento y la respuesta seleccionada.
         boolean correcto = esCorrecta(ejercicio, command.idOpcionesSeleccionadas());
         ItemCatalogo resultado = item(
                 "RESULTADO_INTENTO",
@@ -235,19 +239,28 @@ public class PracticaService implements
                 sesion.fechaFin(),
                 sesion.cantidadIntentos() + 1));
 
+        // 3. Actualizar el resumen de progreso previo a la adaptación.
         ProgresoTema progresoResumen = actualizarResumen(progresoActual, correcto, command.tiempoRespuestaMs(), fechaFin);
         progresoTemaRepository.guardar(progresoResumen);
+
+        // 4. Construir el snapshot con la ventana que indica la política persistida.
         PoliticaAdaptacion politica = politicaAdaptacionRepository.findById(sesion.idPoliticaAdaptacion())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Política de adaptación", sesion.idPoliticaAdaptacion()));
         ContextoAprendizaje contextoInicial = learningContextBuilder.construir(intento, politica, progresoResumen);
+
+        // 5. Analizar rendimiento y 6. evaluar reglas configuradas por prioridad dentro del motor.
         AdaptationEngine motor = motorAdaptativoFactory.crearMotor();
         AdaptationDecision decision = motor.decidir(contextoInicial, politica)
                 .orElseThrow(() -> new IllegalStateException("La política activa no produjo una decisión"));
+
+        // 7. Persistir contexto y aplicar la adaptación auditable sobre el progreso.
         ContextoAprendizaje contextoPersistido = contextoRepository.guardar(decision.contexto());
         EventoAdaptacion evento = adaptationActionExecutor.ejecutar(decision.conContexto(contextoPersistido));
         ProgresoTema progresoFinal = progresoTemaRepository
                 .findByEstudianteAndTema(sesion.idEstudiante(), sesion.idTema())
                 .orElseThrow(() -> new IllegalStateException("El progreso actualizado no está disponible"));
+
+        // 8. Retornar a Android el resultado, progreso y decisión explicable ya persistida.
         return new ResultadoIntento(
                 correcto,
                 resultado.codigo(),

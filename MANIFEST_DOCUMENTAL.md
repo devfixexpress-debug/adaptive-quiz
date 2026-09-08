@@ -45,6 +45,8 @@
 - `docs/03-architecture/01_ARCHITECTURE.md`
 - `docs/03-architecture/02_COMPONENTS.md`
 - `docs/03-architecture/03_DEPLOYMENT.md`
+- `docs/03-architecture/DIAGRAMAS.md`
+- `docs/03-architecture/diagrams/08_CONFIGURACION_PARAMETRICA.mmd`
 - `docs/03-architecture/adr/ADR-0001-monorepo.md`
 - `docs/03-architecture/adr/ADR-0002-backend-modular-vaef-generator.md`
 - `docs/03-architecture/adr/ADR-0003-reglas-deterministas.md`
@@ -67,6 +69,8 @@
 - `docs/07-delivery/06_CUMPLIMIENTO_TALLER_001.md`
 - `docs/08-evidence/README.md`
 - `docs/08-evidence/FINAL_RELEASE_AUDIT.md`
+- `docs/08-evidence/CONFIGURACION_ADAPTATIVA_AUDIT.md`
+- `docs/08-evidence/PARAMETRIC_ADAPTATION_VALIDATION.md`
 - `docs/09-ai-roadmap/01_AI_VISION.md`
 - `docs/09-ai-roadmap/02_AI_ARCHITECTURE.md`
 - `docs/10-codex/01_PROMPT_IMPLEMENTACION.md`
