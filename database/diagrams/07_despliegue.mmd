@@ -1,0 +1,4 @@
+flowchart LR
+    A[Android Device / Emulator] -->|HTTP REST| S[Spring Boot :8080]
+    S -->|JDBC| P[(PostgreSQL :5432)]
+    S -. futuro .-> LLM[Proveedor IA]

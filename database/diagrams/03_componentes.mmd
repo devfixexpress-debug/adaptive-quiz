@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph Mobile
+      UI[Compose UI]
+      VM[ViewModel]
+      CE[Context Builder]
+      PE[Performance Analyzer]
+      AE[Adaptation Engine]
+      EX[Action Executor]
+      UI --> VM --> CE --> PE --> AE --> EX --> UI
+    end
+    subgraph Backend
+      API[REST API]
+      APP[Application]
+      DOM[Domain]
+      INF[Infrastructure]
+      API --> APP --> DOM
+      INF --> DOM
+    end
+    DB[(PostgreSQL)]
+    VM --> API
+    INF --> DB

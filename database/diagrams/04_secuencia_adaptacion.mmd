@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor E as Estudiante
+    participant UI as Mobile
+    participant P as PracticeService
+    participant C as ContextBuilder
+    participant A as AdaptationEngine
+    participant DB as PostgreSQL
+    E->>UI: Responde ejercicio
+    UI->>P: registrar intento
+    P->>DB: PRA_INTENTO / RESPUESTA
+    P->>C: construir contexto
+    C->>DB: guardar ADP_CONTEXTO
+    C->>A: evaluar(contexto)
+    A->>DB: cargar política/reglas
+    A->>DB: guardar evento + acciones
+    A-->>UI: decisión explicable
+    UI-->>E: siguiente dificultad / pista

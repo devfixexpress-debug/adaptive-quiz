@@ -1,0 +1,6 @@
+flowchart LR
+    C[Contexto<br/>aciertos, errores, tiempo, rachas] --> P[Procesamiento<br/>PerformanceAnalyzer]
+    P --> D[Decisión<br/>AdaptationEngine]
+    D --> A[Adaptación<br/>dificultad, tipo, pista]
+    A --> N[Siguiente ejercicio]
+    N --> C

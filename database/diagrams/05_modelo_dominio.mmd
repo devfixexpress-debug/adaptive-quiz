@@ -1,0 +1,29 @@
+classDiagram
+    class Asignatura
+    class Tema
+    class Ejercicio
+    class Opcion
+    class Pista
+    class Estudiante
+    class ProgresoTema
+    class SesionPractica
+    class Intento
+    class Respuesta
+    class ContextoAprendizaje
+    class PoliticaAdaptacion
+    class ReglaAdaptacion
+    class EventoAdaptacion
+    class AccionEvento
+
+    Asignatura "1" --> "*" Tema
+    Tema "1" --> "*" Ejercicio
+    Ejercicio "1" --> "*" Opcion
+    Ejercicio "1" --> "*" Pista
+    Estudiante "1" --> "*" ProgresoTema
+    Estudiante "1" --> "*" SesionPractica
+    SesionPractica "1" --> "*" Intento
+    Intento "1" --> "1" Respuesta
+    Intento "1" --> "0..1" ContextoAprendizaje
+    PoliticaAdaptacion "1" --> "*" ReglaAdaptacion
+    ContextoAprendizaje "1" --> "0..1" EventoAdaptacion
+    EventoAdaptacion "1" --> "*" AccionEvento
