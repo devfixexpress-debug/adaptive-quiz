@@ -2,45 +2,59 @@
 
 > Mantener este archivo en **máximo 2 páginas** al exportarlo.
 
-## 1. Descripción de la aplicación
-AdaptiveQuiz es una aplicación móvil de aprendizaje adaptativo. Registra el desempeño del
-estudiante mientras resuelve ejercicios y modifica automáticamente la dificultad y las ayudas
-de la siguiente experiencia. El problema que aborda es la secuencia rígida de ejercicios que no
-considera diferencias de rendimiento.
+## 1. Descripción
 
-## 2. Contexto utilizado
-El contexto está formado por variables reales de interacción: aciertos, errores, tiempo de
-respuesta, racha reciente, dificultad y tipo de ejercicio actuales.
+AdaptiveQuiz es una aplicación móvil de práctica adaptativa. A partir de los intentos reales del
+estudiante, ajusta automáticamente la dificultad y puede habilitar una pista. No existe selector
+manual de nivel ni dependencia de IA.
 
-## 3. Comportamiento adaptativo
-Al finalizar un intento, el sistema construye una ventana de rendimiento. Si detecta rendimiento
-alto, puede subir la dificultad; si detecta errores consecutivos o baja precisión, puede disminuirla
-y habilitar una pista; en el resto de casos mantiene el nivel. La decisión es automática.
+## 2. Contexto y comportamiento
 
-## 4. Pipeline
-`CONTEXTO -> PROCESAMIENTO -> DECISIÓN -> ADAPTACIÓN`
+Cada intento registra corrección y tiempo de respuesta. El backend toma una ventana reciente de
+cinco intentos, calcula precisión, tiempo promedio, rachas, dificultad y tipo actuales, y persiste
+el snapshot. Las reglas configuradas por prioridad determinan el rendimiento:
 
-- Contexto: `LearningContextBuilder`.
-- Procesamiento: `PerformanceAnalyzer`.
-- Decisión: `AdaptationEngine`.
-- Adaptación: `AdaptationActionExecutor`.
+- bajo: racha de errores >= 3 o precisión <= 0.40;
+- alto: precisión >= 0.80 y tiempo promedio <= 20 000 ms;
+- medio: fallback.
 
-## 5. Arquitectura / componentes
-Mobile Android consume un backend Spring Boot con PostgreSQL. La arquitectura separa UI,
-casos de uso, dominio, infraestructura y persistencia. El motor adaptativo se mantiene
-independiente de UI e IA.
+La estrategia sube, mantiene o baja dificultad, respeta los límites BASICO/AVANZADO y habilita
+pista para desempeño bajo.
 
-## 6. Tecnologías
-Kotlin, Android, Jetpack Compose, Java, Spring Boot, PostgreSQL, Flyway, REST/OpenAPI,
-Docker, GitHub, JUnit y GitHub Actions.
+## 3. Pipeline
 
-## 7. Ubicación del código relevante
-| Elemento | Ubicación esperada |
-|---|---|
-| Captura del contexto | `mobile/.../adaptation/context/` |
-| Procesamiento | `mobile/.../adaptation/PerformanceAnalyzer.kt` |
-| Decisión | `mobile/.../adaptation/AdaptationEngine.kt` |
-| Adaptación | `mobile/.../adaptation/AdaptationActionExecutor.kt` |
-| Persistencia backend | `backend/...-infrastructure/` |
-| Reglas | BD `CFG_REGLA_ADAPTACION` + repositorio |
-| Evidencia | `ADP_CONTEXTO_APRENDIZAJE`, `ADP_EVENTO_ADAPTACION` |
+Intento → Contexto → Procesamiento → Decisión → Adaptación
+
+- Contexto: backend/adaptive-quiz-application/.../LearningContextBuilder.java.
+- Procesamiento: backend/adaptive-quiz-domain/.../DefaultPerformanceAnalyzer.java.
+- Decisión: backend/adaptive-quiz-domain/.../RuleBasedAdaptationStrategy.java.
+- Adaptación/persistencia: backend/adaptive-quiz-application/.../AdaptationActionPersistenceService.java.
+- Orquestación transaccional: backend/adaptive-quiz-application/.../PracticaService.java.
+
+Los resultados se conservan en PRA_*, APR_PROGRESO_TEMA, ADP_CONTEXTO_APRENDIZAJE,
+ADP_EVENTO_ADAPTACION y ADP_ACCION_EVENTO.
+
+## 4. Arquitectura y tecnologías
+
+Android Kotlin/Jetpack Compose consume un backend Spring Boot modular
+(domain, application, infrastructure y API) con PostgreSQL y Flyway. El API se documenta con
+OpenAPI y expone Actuator. La UI usa ViewModel, StateFlow y Retrofit; sólo representa la decisión
+recibida y no contiene reglas adaptativas.
+
+La base se crea con V1, V1.1 y la migración aditiva V2. V1/V1.1 permanecen inmutables; Hibernate
+valida el esquema, no lo genera.
+
+## 5. Demostración
+
+En PostgreSQL 17.11 real se verificaron catorce intentos, catorce contextos y catorce eventos. El evento 1
+demostró INTERMEDIO → AVANZADO por R_ALTO; eventos posteriores demostraron reducción y
+ACTIVAR_PISTA. El endpoint de detalle devuelve contexto, regla, motivo y acciones. El APK debug
+compila, pasa lint y fue instalado en emulator-5554: Inicio, Práctica, Resultado, Monitor y
+Progreso consumieron la API real. El teléfono físico también fue detectado por ADB.
+
+## 6. Evidencia y alcance
+
+Las evidencias reproducibles están en docs/08-evidence/. La certificación de esta iteración es
+contra backend y PostgreSQL reales, sin introducir mocks ni nuevas carpetas de pruebas. Sólo se
+soporta visualmente OPCION_UNICA; el cambio dinámico de tipo está modelado y queda fuera de la
+demo principal. IA queda explícitamente fuera de alcance.

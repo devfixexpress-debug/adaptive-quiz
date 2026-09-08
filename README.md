@@ -4,124 +4,137 @@
 Curso: SI806 — Desarrollo Adaptativo e Integrado de Software  
 Universidad Nacional de Ingeniería — 2026-II
 
-## 1. Propósito
+## Propósito
 
-AdaptiveQuiz es una aplicación móvil de aprendizaje adaptativo que detecta automáticamente el
-rendimiento del estudiante a partir de sus aciertos, errores, tiempos de respuesta y rachas
-recientes. Con esta información construye un contexto de aprendizaje, calcula el nivel de
-rendimiento y adapta automáticamente la dificultad y el tipo de ejercicio.
+AdaptiveQuiz es una aplicación móvil de aprendizaje adaptativo. Registra aciertos, errores,
+tiempos y rachas; construye un contexto de aprendizaje y modifica automáticamente la siguiente
+experiencia. El estudiante no elige manualmente un nivel de dificultad.
 
-> AdaptiveQuiz **no pertenece a VAEF**. Se desarrolla dentro del workspace VELTIA y puede
-> reutilizar el generador y estándares técnicos consolidados en VAEF, especialmente la
-> modularidad del backend y la disciplina de datos.
+AdaptiveQuiz es independiente de VAEF. Comparte el workspace VELTIA y reutiliza sus patrones
+técnicos consolidados (módulos, Spring Boot, Flyway, OpenAPI y manejo de errores), pero no tiene
+dependencias funcionales con sus servicios.
 
-## 2. Pipeline adaptativo obligatorio
-
-```text
-CONTEXTO -> PROCESAMIENTO -> DECISIÓN -> ADAPTACIÓN
-```
-
-Implementación prevista:
+## Pipeline adaptativo implementado
 
 ```text
-Intentos recientes
-      |
-      v
-LearningContext
-      |
-      v
-PerformanceAnalyzer
-      |
-      v
-AdaptationEngine
-      |
-      v
-AdaptationDecision
-      |
-      +--> dificultad
-      +--> tipo de ejercicio
-      +--> pistas/ayudas
+Intento real
+  → LearningContextBuilder
+  → PerformanceAnalyzer
+  → RuleBasedAdaptationStrategy
+  → AdaptationActionExecutor
+  → contexto, evento y acciones persistidos
+  → siguiente experiencia
 ```
 
-El núcleo evaluable del Taller será **determinista y basado en reglas**. La IA se incorporará
-posteriormente como estrategia adicional, nunca como dependencia del comportamiento mínimo
-exigido por el curso.
+La estrategia activa es determinista y parametrizada en `CFG_POLITICA_ADAPTACION` y
+`CFG_REGLA_ADAPTACION`. Aplica, por prioridad, las reglas `R_BAJO_RACHA`,
+`R_BAJO_PRECISION`, `R_ALTO` y el fallback `R_MEDIO`; respeta los límites de `BASICO` y
+`AVANZADO`. `AiAdaptationStrategy` sólo está prevista por el contrato `AdaptationStrategy`: no
+hay SDK, clave ni integración de IA.
 
-## 3. Arquitectura objetivo
+## Arquitectura
 
-- `mobile/`: Android, Kotlin, Jetpack Compose.
-- `backend/`: Spring Boot modular, generado/reutilizado desde el generador VAEF.
-- `database/`: PostgreSQL, Flyway, modelo robusto y paramétrico.
-- `docs/`: requisitos, análisis, arquitectura, trazabilidad, pruebas, entrega.
-- `docker/`: composición local.
-- `.github/`: gestión, plantillas y CI.
+- `backend/adaptive-quiz-domain`: modelos, puertos y contratos puros de adaptación.
+- `backend/adaptive-quiz-application`: casos de uso, contexto, motor y ejecución de acciones.
+- `backend/adaptive-quiz-infrastructure`: JPA/JDBC, mappers y adaptadores PostgreSQL.
+- `backend/adaptive-quiz-api`: Spring Boot, REST, Flyway, OpenAPI y Actuator.
+- `mobile`: Android Kotlin con Jetpack Compose, Material 3, ViewModel, StateFlow y Retrofit.
+- `database`: fuente canónica de DDL, seed y migraciones.
 
-## 4. Estructura
+La fuente canónica de datos se conserva en `database/`. El API empaqueta las migraciones para
+Flyway; Hibernate usa `ddl-auto=validate`, nunca genera el esquema.
 
-Consulte [`docs/README.md`](docs/README.md).
+## Requisitos locales
 
-## 5. Modelo de datos
+- Docker Desktop.
+- JDK 17.
+- Maven 3.9 o compatible.
+- Android Studio con Android SDK Platform 37 para el build Android actual.
 
-La arquitectura de datos separa:
+## Ejecución con PostgreSQL real
 
-1. **Catálogo / clasificación**: `CAT_*`.
-2. **Configuración y parámetros**: `CFG_*`.
-3. **Parque de datos académico y aprendizaje**: `ACA_*`, `BAN_*`, `APR_*`.
-4. **Eventos operativos**: `PRA_*`.
-5. **Contexto y eventos adaptativos**: `ADP_*`.
+Desde la raíz del proyecto:
 
-El DDL se encuentra en:
-
-`database/migrations/postgresql/V1__adaptive_quiz_schema.sql`
-
-El diccionario se encuentra en:
-
-`database/DICCIONARIO_DATOS.md`
-
-## 6. Ejecución esperada
-
-### Base de datos
 ```powershell
 Copy-Item .env.example .env
 docker compose --env-file .env up -d db
-```
 
-### Backend
-```powershell
-# Desde adaptive-quiz/. La ruta absoluta permite que Spring lea el .env no versionado.
 $env:ADAPTIVEQUIZ_ENV_FILE = (Resolve-Path .env).Path
 Push-Location backend
-mvn clean verify
-mvn -pl adaptive-quiz-api -am spring-boot:run
+mvn -pl adaptive-quiz-api -am package -DskipTests
+java -jar adaptive-quiz-api/target/adaptive-quiz-api-0.1.0-SNAPSHOT.jar
 ```
 
-Con el backend en ejecución:
+El ejemplo local expone PostgreSQL en `55432` y el backend en `8080`. Las credenciales de
+desarrollo viven sólo en `.env`; no versionar una variante con secretos reales.
 
-~~~text
-http://localhost:8080/actuator/health
-http://localhost:8080/swagger-ui/index.html
-~~~
-
-### Mobile
-Abrir `mobile/` en Android Studio y ejecutar el módulo `app`.
-
-El corte M0/M1 deja el backend y PostgreSQL ejecutables. No se implementó ni modificó la aplicación Android en este corte.
-
-## 7. Trazabilidad
-
-Todo cambio debe seguir:
+Comprobaciones de runtime:
 
 ```text
-Requisito -> Historia -> Issue -> Branch -> Commit -> PR -> Test -> Release
+http://localhost:8080/actuator/health
+http://localhost:8080/api-docs
+http://localhost:8080/swagger-ui/index.html
 ```
 
-Matriz: `docs/01-requirements/04_TRACEABILITY_MATRIX.md`
+## API disponible
 
-## 8. Versionado
+```text
+GET  /api/v1/asignaturas
+GET  /api/v1/asignaturas/{id}/temas
+GET  /api/v1/ejercicios/{id}
+POST /api/v1/sesiones-practica
+GET  /api/v1/ejercicios/siguiente?estudianteId={id}&temaId={id}
+POST /api/v1/intentos
+GET  /api/v1/estudiantes/{id}/progreso
+GET  /api/v1/estudiantes/{id}/progreso/{temaId}
+GET  /api/v1/estudiantes/{id}/adaptaciones
+GET  /api/v1/adaptaciones/{id}
+```
 
-SemVer. Primera línea base documental y de datos: `v0.1.0`.
+## Android
 
-## 9. IA
+Abra `mobile/` en Android Studio o ejecute:
 
-La IA está planificada en `docs/09-ai-roadmap/`. El Taller 001 puede ser presentado y
-demostrado completamente sin IA.
+```powershell
+Push-Location mobile
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\\Android\\Sdk"
+$env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+.\\gradlew.bat lintDebug assembleDebug
+```
+
+El APK se genera en `mobile/app/build/outputs/apk/debug/app-debug.apk`. En emulador, la URL
+por defecto es `http://10.0.2.2:8080/`; se centraliza en
+`adaptiveQuizApiBaseUrl` de `mobile/gradle.properties` y se entrega mediante `BuildConfig`.
+Para un dispositivo físico sólo se modifica esa propiedad.
+
+Las pantallas son Inicio, Práctica, Resultado, Monitor Adaptativo y Progreso. El Monitor muestra
+visiblemente `CONTEXTO → PROCESAMIENTO → DECISIÓN → ADAPTACIÓN`; Compose sólo representa la
+decisión recibida del API y no contiene reglas de negocio.
+
+## Demostración reproducible
+
+1. Inicie una sesión para Estudiante Demo y Álgebra con `POST /sesiones-practica`.
+2. Obtenga la pregunta con `GET /ejercicios/siguiente`.
+3. Registre una respuesta correcta y rápida mediante `POST /intentos`: desde un esquema limpio,
+   el inicio es `INTERMEDIO` y la regla `R_ALTO` lleva a `AVANZADO`.
+4. Registre tres errores consecutivos: se aplica `R_BAJO_PRECISION` o `R_BAJO_RACHA`, baja la
+   dificultad y se persiste `ACTIVAR_PISTA`.
+5. Consulte `/estudiantes/1/adaptaciones` o el Monitor Adaptativo para ver el contexto, regla,
+   motivo, dificultad anterior/nueva y acciones.
+
+La validación de esta iteración se realiza directamente contra backend y PostgreSQL reales. Las
+evidencias, IDs y comandos ejecutados están en `docs/08-evidence/`.
+
+## Versionado y trazabilidad
+
+Versión actual: `0.2.0`.
+
+- Matriz: `docs/01-requirements/04_TRACEABILITY_MATRIX.md`.
+- Motor: `docs/04-adaptive-engine/`.
+- Validación: `docs/08-evidence/ADAPTIVE_ENGINE_VALIDATION.md`,
+  `MOBILE_BUILD_VALIDATION.md` y `END_TO_END_VALIDATION.md`.
+
+## IA
+
+La IA sigue fuera del alcance de esta entrega. El Taller 001 funciona íntegramente con
+`RuleBasedAdaptationStrategy`.
