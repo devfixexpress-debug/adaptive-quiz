@@ -23,10 +23,11 @@ PRA_INTENTO
   → ADP_CONTEXTO_APRENDIZAJE + ADP_EVENTO_ADAPTACION + ADP_ACCION_EVENTO
 ~~~
 
-LearningContextBuilder tomó la ventana configurable de cinco intentos. El análisis calculó
-precisión, tiempo promedio, rachas, dificultad y tipo. La estrategia leyó política/reglas
-persistidas, ordenadas por prioridad, y resolvió códigos semánticos de catálogo; no se usan IDs
-de catálogo embebidos en Java.
+LearningContextBuilder tomó una ventana móvil de hasta cinco intentos recientes disponibles,
+según `tamano_ventana_intentos` de la política. El análisis calculó precisión, tiempo promedio,
+rachas, dificultad y tipo. La estrategia leyó política/reglas persistidas, ordenadas por
+prioridad, y resolvió códigos semánticos de catálogo; no se usan IDs de catálogo embebidos en
+Java.
 
 ## Evidencia de decisiones persistidas
 

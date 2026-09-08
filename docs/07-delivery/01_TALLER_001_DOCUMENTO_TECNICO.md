@@ -4,57 +4,58 @@
 
 ## 1. Descripción
 
-AdaptiveQuiz es una aplicación móvil de práctica adaptativa. A partir de los intentos reales del
-estudiante, ajusta automáticamente la dificultad y puede habilitar una pista. No existe selector
-manual de nivel ni dependencia de IA.
+AdaptiveQuiz es una aplicación móvil de práctica adaptativa para el Taller 001 de SI806. A partir
+de respuestas reales, ajusta automáticamente la siguiente experiencia de aprendizaje. El
+estudiante no selecciona manualmente dificultad y la solución no depende de IA.
 
-## 2. Contexto y comportamiento
+## 2. Contexto
 
-Cada intento registra corrección y tiempo de respuesta. El backend toma una ventana reciente de
-cinco intentos, calcula precisión, tiempo promedio, rachas, dificultad y tipo actuales, y persiste
-el snapshot. Las reglas configuradas por prioridad determinan el rendimiento:
+Cada intento registra respuesta, corrección y tiempo. El backend construye una ventana móvil de
+hasta cinco intentos recientes disponibles, según `tamano_ventana_intentos` de la política, y
+persiste el snapshot con precisión, tiempo promedio, rachas, dificultad y tipo de ejercicio.
 
-- bajo: racha de errores >= 3 o precisión <= 0.40;
-- alto: precisión >= 0.80 y tiempo promedio <= 20 000 ms;
-- medio: fallback.
+## 3. Comportamiento adaptativo
 
-La estrategia sube, mantiene o baja dificultad, respeta los límites BASICO/AVANZADO y habilita
-pista para desempeño bajo.
+Las reglas parametrizadas se evalúan por prioridad: bajo desempeño por racha de errores >= 3 o
+precisión <= 0.40; alto desempeño por precisión >= 0.80 y tiempo promedio <= 20 000 ms; y
+fallback medio. La decisión sube, mantiene o baja dificultad, respeta los límites
+BASICO/AVANZADO y habilita pista para desempeño bajo.
 
-## 3. Pipeline
+La certificación contra PostgreSQL 17.11, Spring Boot y Android real verificó subidas,
+reducciones y `ACTIVAR_PISTA`, con eventos, contexto y acciones persistidos.
+
+## 4. Pipeline
 
 Intento → Contexto → Procesamiento → Decisión → Adaptación
 
-- Contexto: backend/adaptive-quiz-application/.../LearningContextBuilder.java.
-- Procesamiento: backend/adaptive-quiz-domain/.../DefaultPerformanceAnalyzer.java.
-- Decisión: backend/adaptive-quiz-domain/.../RuleBasedAdaptationStrategy.java.
-- Adaptación/persistencia: backend/adaptive-quiz-application/.../AdaptationActionPersistenceService.java.
-- Orquestación transaccional: backend/adaptive-quiz-application/.../PracticaService.java.
+- Contexto: `LearningContextBuilder`.
+- Procesamiento: `DefaultPerformanceAnalyzer`.
+- Decisión: `RuleBasedAdaptationStrategy`.
+- Adaptación/persistencia: `AdaptationActionPersistenceService`.
+- Orquestación transaccional: `PracticaService`.
 
-Los resultados se conservan en PRA_*, APR_PROGRESO_TEMA, ADP_CONTEXTO_APRENDIZAJE,
-ADP_EVENTO_ADAPTACION y ADP_ACCION_EVENTO.
+Los resultados se conservan en PRA_*, `APR_PROGRESO_TEMA`,
+`ADP_CONTEXTO_APRENDIZAJE`, `ADP_EVENTO_ADAPTACION` y
+`ADP_ACCION_EVENTO`.
 
-## 4. Arquitectura y tecnologías
+## 5. Arquitectura y componentes
 
-Android Kotlin/Jetpack Compose consume un backend Spring Boot modular
-(domain, application, infrastructure y API) con PostgreSQL y Flyway. El API se documenta con
-OpenAPI y expone Actuator. La UI usa ViewModel, StateFlow y Retrofit; sólo representa la decisión
-recibida y no contiene reglas adaptativas.
+Android consume un backend Spring Boot modular: domain (modelo y contratos), application (casos
+de uso y motor), infrastructure (persistencia PostgreSQL) y API (REST, Flyway, OpenAPI y
+Actuator). La UI usa ViewModel y sólo representa la decisión recibida; no contiene reglas
+adaptativas. V1, V1.1 y V2 son migraciones inmutables y Hibernate valida el esquema.
 
-La base se crea con V1, V1.1 y la migración aditiva V2. V1/V1.1 permanecen inmutables; Hibernate
-valida el esquema, no lo genera.
+## 6. Tecnologías
 
-## 5. Demostración
+Kotlin, Jetpack Compose, Material 3, Retrofit, StateFlow; Java 17, Spring Boot, Maven, JPA,
+Flyway, PostgreSQL 17.11, Docker, OpenAPI y Actuator.
 
-En PostgreSQL 17.11 real se verificaron catorce intentos, catorce contextos y catorce eventos. El evento 1
-demostró INTERMEDIO → AVANZADO por R_ALTO; eventos posteriores demostraron reducción y
-ACTIVAR_PISTA. El endpoint de detalle devuelve contexto, regla, motivo y acciones. El APK debug
-compila, pasa lint y fue instalado en emulator-5554: Inicio, Práctica, Resultado, Monitor y
-Progreso consumieron la API real. El teléfono físico también fue detectado por ADB.
+## 7. Ubicación de código relevante
 
-## 6. Evidencia y alcance
-
-Las evidencias reproducibles están en docs/08-evidence/. La certificación de esta iteración es
-contra backend y PostgreSQL reales, sin introducir mocks ni nuevas carpetas de pruebas. Sólo se
-soporta visualmente OPCION_UNICA; el cambio dinámico de tipo está modelado y queda fuera de la
-demo principal. IA queda explícitamente fuera de alcance.
+- Backend: `backend/adaptive-quiz-domain`, `adaptive-quiz-application`,
+  `adaptive-quiz-infrastructure` y `adaptive-quiz-api`.
+- Motor: `backend/adaptive-quiz-domain/.../adaptation/` y
+  `backend/adaptive-quiz-application/.../service/`.
+- Android: `mobile/app/src/main/java/com/veltia/adaptivequiz/mobile/`.
+- Migraciones canónicas: `database/migrations/postgresql/`.
+- Evidencia de ejecución: `docs/08-evidence/`.

@@ -1,5 +1,6 @@
 # AdaptiveQuiz
 
+**Versión de entrega: 1.0.0**
 **Taller 001 — Desarrollo de una Aplicación Adaptativa**  
 Curso: SI806 — Desarrollo Adaptativo e Integrado de Software  
 Universidad Nacional de Ingeniería — 2026-II
@@ -50,19 +51,22 @@ Flyway; Hibernate usa `ddl-auto=validate`, nunca genera el esquema.
 - JDK 17.
 - Maven 3.9 o compatible.
 - Android Studio con Android SDK Platform 37 para el build Android actual.
+- Git para clonar el repositorio y conservar el Gradle Wrapper versionado.
 
 ## Ejecución con PostgreSQL real
 
-Desde la raíz del proyecto:
+Para clonar y arrancar desde cero:
 
 ```powershell
+git clone https://github.com/devfixexpress-debug/adaptive-quiz.git
+Set-Location adaptive-quiz
 Copy-Item .env.example .env
 docker compose --env-file .env up -d db
 
 $env:ADAPTIVEQUIZ_ENV_FILE = (Resolve-Path .env).Path
 Push-Location backend
-mvn -pl adaptive-quiz-api -am package -DskipTests
-java -jar adaptive-quiz-api/target/adaptive-quiz-api-0.1.0-SNAPSHOT.jar
+mvn clean verify
+java -jar adaptive-quiz-api/target/adaptive-quiz-api-1.0.0.jar
 ```
 
 El ejemplo local expone PostgreSQL en `55432` y el backend en `8080`. Las credenciales de
@@ -111,6 +115,37 @@ Las pantallas son Inicio, Práctica, Resultado, Monitor Adaptativo y Progreso. E
 visiblemente `CONTEXTO → PROCESAMIENTO → DECISIÓN → ADAPTACIÓN`; Compose sólo representa la
 decisión recibida del API y no contiene reglas de negocio.
 
+## Pruebas y calidad local
+
+El release combina pruebas unitarias deterministas del dominio/aplicación con la certificación
+E2E ya registrada contra Spring Boot y PostgreSQL reales. Para repetir los builds locales:
+
+~~~powershell
+Push-Location backend
+mvn clean verify
+mvn package
+Pop-Location
+
+Push-Location mobile
+.\gradlew.bat clean lintDebug assembleDebug
+Pop-Location
+~~~
+
+El APK debug resultante es
+`mobile/app/build/outputs/apk/debug/app-debug.apk`. No se usa Testcontainers como evidencia
+principal: la evidencia de integración se conserva en `docs/08-evidence/`.
+
+## Integración continua
+
+Los workflows versionados se ejecutan en cada `push` y `pull request` hacia `main`:
+
+- `.github/workflows/backend-ci.yml`: JDK 17 y `mvn -B clean verify`.
+- `.github/workflows/android-ci.yml`: JDK 17, Android SDK Platform 37,
+  `lintDebug` y `assembleDebug`.
+
+El tag y la release `v1.0.0` se crearán únicamente después de que ambos workflows estén verdes
+en GitHub Actions.
+
 ## Demostración reproducible
 
 1. Inicie una sesión para Estudiante Demo y Álgebra con `POST /sesiones-practica`.
@@ -125,14 +160,16 @@ decisión recibida del API y no contiene reglas de negocio.
 La validación de esta iteración se realiza directamente contra backend y PostgreSQL reales. Las
 evidencias, IDs y comandos ejecutados están en `docs/08-evidence/`.
 
-## Versionado y trazabilidad
+## Versionado, trazabilidad y entrega
 
-Versión actual: `0.2.0`.
+Versión actual: `1.0.0`.
 
 - Matriz: `docs/01-requirements/04_TRACEABILITY_MATRIX.md`.
 - Motor: `docs/04-adaptive-engine/`.
 - Validación: `docs/08-evidence/ADAPTIVE_ENGINE_VALIDATION.md`,
   `MOBILE_BUILD_VALIDATION.md` y `END_TO_END_VALIDATION.md`.
+- Documento técnico de entrega: `docs/07-delivery/01_TALLER_001_DOCUMENTO_TECNICO.md`.
+- Checklist de entrega: `docs/07-delivery/05_DELIVERY_CHECKLIST.md`.
 
 ## IA
 

@@ -2,12 +2,28 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-08
+
+### Added
+
+- Gradle Wrapper Android versionado para builds reproducibles fuera de Android Studio.
+- Cobertura unitaria determinista del motor adaptativo y de la construcción de contexto,
+  complementaria a la certificación E2E contra runtime real.
+- Workflows GitHub Actions para validación independiente de backend y Android.
+
+### Changed
+
+- Documentación de release, contrato REST y comandos de ejecución alineados con la versión 1.0.0.
+- La ventana adaptativa se describe como una ventana móvil de hasta cinco intentos recientes
+  disponibles, según `tamano_ventana_intentos` de la política.
+
 ## [0.2.0] - 2026-09-08
 
 ### Added
 
 - Flujo de práctica real: sesión, siguiente ejercicio, calificación, intento, respuesta y progreso.
-- Motor adaptativo basado en reglas, con contexto de cinco intentos, análisis de rendimiento,
+- Motor adaptativo basado en reglas, con una ventana móvil de hasta cinco intentos recientes
+  disponibles, según `tamano_ventana_intentos` de la política, análisis de rendimiento y
   persistencia de `ADP_CONTEXTO_APRENDIZAJE`, `ADP_EVENTO_ADAPTACION` y `ADP_ACCION_EVENTO`.
 - Migración inmutable `V2__adaptive_quiz_mvp.sql` con parámetros de dificultad/tipo inicial y
   versión del motor.
@@ -18,8 +34,8 @@
 
 ### Changed
 
-- La certificación de esta iteración se realiza contra runtime real, sin introducir nuevas
-  carpetas de pruebas ni mocks.
+- La certificación de la iteración se realizó contra runtime real; el release posterior la
+  complementa con pruebas unitarias puras, sin sustituir esa evidencia por mocks.
 
 ### Fixed
 
